@@ -1,0 +1,50 @@
+spring:
+  mvc:
+    servlet:
+      load-on-startup: 1
+#  main:
+#    allow-bean-definition-overriding: true
+
+# 接口Sentinel鉴权、限流
+sentinel-properties:
+  apis:
+    - api: interpretation-api
+      authority-rule:
+        limit-app: APP_FNDPFM
+        resource: /indicators/interpretation
+      flow-rules:
+        - resource: /indicators/interpretation
+          count: 500
+          limit-app: APP_FNDPFM
+    - api: position-performance-api
+      authority-rule:
+        limit-app: APP_FNDPFM
+        resource: /position/performance
+      flow-rules:
+        - resource: /position/performance
+          count: 100
+          limit-app: APP_FNDPFM
+    - api: indicators-character-api
+      authority-rule:
+        limit-app: MO_FNDDTL
+        resource: /indicators/character
+      flow-rules:
+        - resource: /indicators/character
+          count: 200
+          limit-app: MO_FNDDTL
+
+degrade-properties:
+  rules:
+    - rule: rule1
+      resource: xxx
+      slow:
+        count: 400  # 慢调用时间
+        time-window: 300  # 熔断时间
+        slow-radio: 0.5   # 慢调用比例
+        min-request-amount: 10    # 熔断触发的最小请求数
+        start-interval: 10000     # 统计时长
+      error:
+        count: 0.1
+        time-window: 300
+        min-request-amount: 10
+        start-interval: 10000
