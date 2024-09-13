@@ -83,3 +83,5 @@ Thank you all, very much.
 
 > 作者：Artwalker 
 > 出处：https://www.cnblogs.com/artwalker/p/12705648.html
+
+视频地址：https://news.stanford.edu/stories/2005/06/youve-got-find-love-jobs-says.
