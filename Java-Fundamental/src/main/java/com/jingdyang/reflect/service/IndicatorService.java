@@ -47,6 +47,10 @@ public class IndicatorService {
                 DateRangeEnum.TOTAL);
         // 指标信息列表
         List<IndicatorBO> indicators = indicatorDao.getIndicators(wmpIds, indicatorEnumList, dateRangeEnumList);
+
+        // mock test data
+        mockTestData(indicators);
+
         // <理财产品id，产品对应指标信息>
         Map<String/*wmpId*/, List<IndicatorBO>> wmpIdToIndicatorMapping =
                 indicators.stream().collect(Collectors.groupingBy(IndicatorBO::getWmpId));
@@ -79,6 +83,96 @@ public class IndicatorService {
             BigDecimal indicatorValue = item.getIndicatorValue();
             ReflectUtils.invokeSetMethod(target, propertyName.toString(), indicatorValue);
         });
+    }
+
+    private void mockTestData(List<IndicatorBO> indicators) {
+        // 收益率：yield
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("yield")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("m1")
+                .build());
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("yield")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("m3")
+                .build());
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("yield")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("m6")
+                .build());
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("yield")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("y1")
+                .build());
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("yield")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("y3")
+                .build());
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("yield")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("year")
+                .build());
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("yield")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("total")
+                .build());
+
+        // 最大回撤：maxDrawdown
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("maxDrawdown")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("m1")
+                .build());
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("maxDrawdown")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("m3")
+                .build());
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("maxDrawdown")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("m6")
+                .build());
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("maxDrawdown")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("y1")
+                .build());
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("maxDrawdown")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("y3")
+                .build());
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("maxDrawdown")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("year")
+                .build());
+        indicators.add(IndicatorBO.builder()
+                .wmpId("600036")
+                .indicator("maxDrawdown")
+                .indicatorValue(new BigDecimal("6.6"))
+                .dateRange("total")
+                .build());
     }
 
 }
