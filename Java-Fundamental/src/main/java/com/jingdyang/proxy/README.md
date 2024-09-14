@@ -62,4 +62,71 @@ CGLIB
 1. **灵活性**：动态代理更加灵活，不需要必须实现接口，可以直接代理实现类，并且可以不需要针对每个目标类都创建一个代理类。另外，静态代理中，接口一旦新增加方法，目标对象和代理对象都要进行修改，这是非常麻烦的！
 2. **JVM 层面**：静态代理在编译时就将接口、实现类、代理类这些都变成了一个个实际的 class 文件。而动态代理是在运行时动态生成类字节码，并加载到 JVM 中的。
 
+
+
+### 动态代理要解决什么问题？
+
+####  什么是代理？
+
+**代理模式**(Proxy pattern): 为另一个对象提供一个替身或占位符以控制对这个对象的访问
+
+![img](https://pdai.tech/images/pics/a6c20f60-5eba-427d-9413-352ada4b40fe.png)
+
+举个简单的例子：
+
+我(client)如果要买(doOperation)房，可以找中介(proxy)买房，中介直接和卖方(target)买房。中介和卖方都实现买卖(doOperation)的操作。中介就是代理(proxy)。
+
+####  什么是动态代理？
+
+> 动态代理就是，在程序运行期，创建目标对象的代理对象，并对目标对象中的方法进行功能性增强的一种技术。
+
+在生成代理对象的过程中，目标对象不变，代理对象中的方法是目标对象方法的增强方法。可以理解为运行期间，对象中方法的动态拦截，在拦截方法的前后执行功能操作。
+
+![img](https://pdai.tech/images/spring/springframework/spring-springframework-aop-61.png)
+
+### 
+
+###  什么是Cglib? SpringAOP和Cglib是什么关系？
+
+> Cglib是一个强大的、高性能的代码生成包，它广泛被许多AOP框架使用，为他们提供方法的拦截。
+
+![img](https://pdai.tech/images/spring/springframework/spring-springframework-aop-62.png)
+
+- 最底层是字节码，字节码相关的知识请参考 [JVM基础 - 类字节码详解](https://pdai.tech/md/java/jvm/java-jvm-class.html)
+- ASM是操作字节码的工具
+- cglib基于ASM字节码工具操作字节码（即动态生成代理，对方法进行增强）
+- SpringAOP基于cglib进行封装，实现cglib方式的动态代理
+
+
+
+## Cglib代理的流程
+
+我们把上述Demo的主要流程画出来，你便能很快理解
+
+![img](https://pdai.tech/images/spring/springframework/spring-springframework-aop-63.png)
+
+更多细节：
+
+- 在上图中，我们可以通过在Enhancer中配置更多的参数来控制代理的行为，比如如果只希望增强这个类中的一个方法（而不是所有方法），那就增加callbackFilter来对目标类中方法进行过滤；Enhancer可以有更多的参数类配置其行为，不过我们在学习上述主要的流程就够了。
+- final方法为什么不能被代理？很显然final方法没法被子类覆盖，当然不能代理了。
+- Mockito为什么不能mock静态方法？因为mockito也是基于cglib动态代理来实现的，static方法也不能被子类覆盖，所以显然不能mock。但PowerMock可以mock静态方法，因为它直接在bytecode上工作，更多可以看[Mockito单元测试]()。（pdai: 通了没？是不是so easy...）
+
+
+
+参考：
+
 [Java代理模式详解](https://javaguide.cn/java/basis/proxy.html)
+
+https://pdai.tech/md/spring/spring-x-framework-aop-source-3.html
+
+
+
+----------
+
+# JDK动态代理原理：为什么目标对象一定要实现接口？
+
+> ![img](https://i-blog.csdnimg.cn/blog_migrate/e25caf740868bfd779bac6f00cf469bf.png)
+>
+> https://blog.csdn.net/weixin_45967584/article/details/136848759
+>
+> https://blog.csdn.net/zwwhnly/article/details/130192925
