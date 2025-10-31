@@ -1,0 +1,36 @@
+
+
+spring:
+  elasticsearch:
+    uris: 11.129.8.163:8200,11.129.8.164:8200,11.129.8.165:8200
+    username: 2723
+    password: HQVWev2QN5zbT0
+    connection-timeout: 1000
+    socket-timeout: 10000
+  rabbitmq:
+    # RabbitMQ的主机地址
+    host: 12.5.111.23
+    management:
+      port: 15672
+    # 登录到RabbitMQ的密码
+    password: 9425858a-8982-4dcf-969b-ad12814b167e
+    # RabbitMQ的端口号
+    port: 5672
+    # 登录到RabbitMQ的用户名
+    username: 864d99a7-6e46-4201-889c-2eefcd78e42a
+    # 连接到RabbitMQ的虚拟主机
+    virtual-host: 122189d5-266c-4392-9c24-c6dc76cac499
+    listener:
+      # 容器类型: simple或direct
+      type: simple
+      simple:
+        # 最小的消费者数量
+        concurrency: 1
+        # 一个消费者最多可处理的nack消息数量，如果有事务的话，必须大于等于transaction数量.
+        prefetch: 1
+        # 是否启动时自动启动容器
+        auto-startup: true
+        # 表示消息确认方式，其有三种配置方式，分别是none、manual和auto；默认auto
+        acknowledge-mode: manual
+        queue: queue.cmb.insurance.task
+        exchange: exchange.cmb.insurance.task
