@@ -1,0 +1,96 @@
+
+
+spring:
+  elasticsearch:
+    uris: 11.129.8.163:8200,11.129.8.164:8200,11.129.8.165:8200
+    username: 2723
+    password: HQVWev2QN5zbT0
+    connection-timeout: 1000
+    socket-timeout: 10000
+  rabbitmq:
+    # RabbitMQ的主机地址
+    host: 12.5.111.23
+    management:
+      port: 15672
+    # 登录到RabbitMQ的密码
+    password: 9425858a-8982-4dcf-969b-ad12814b167e
+    # RabbitMQ的端口号
+    port: 5672
+    # 登录到RabbitMQ的用户名
+    username: 864d99a7-6e46-4201-889c-2eefcd78e42a
+    # 连接到RabbitMQ的虚拟主机
+    virtual-host: 122189d5-266c-4392-9c24-c6dc76cac499
+    listener:
+      # 容器类型: simple或direct
+      type: simple
+      simple:
+        # 最小的消费者数量
+        concurrency: 1
+        # 一个消费者最多可处理的nack消息数量，如果有事务的话，必须大于等于transaction数量.
+        prefetch: 1
+        # 是否启动时自动启动容器
+        auto-startup: true
+        # 表示消息确认方式，其有三种配置方式，分别是none、manual和auto；默认auto
+        acknowledge-mode: manual
+        queue: queue.cmb.insurance.task
+        exchange: exchange.cmb.insurance.task
+
+
+morph:
+  # 数据任务接入Dolphin Scheduler调度平台，Dolphin Scheduler任务触发发送RabbitMQ消息，有scheduler-adapter监听并消费MQ消息，
+  # 然后执行相应的数据任务Task，下面为RabbitMQ相关配置
+  scheduler-adapter:
+    mq-consumer:
+      enable-default: true
+      listen-queues: morph_queue.cmb.finance.platform.queue,morph_queue.cmb.deposit.platform.queue,
+      morph_queue.cmb.precious.metal.platform.queue,morph_queue.cmb.common.platform.queue,morph_queue.cmb.bond.platform.queue
+      concurrency: 4
+      prefetch-count: 20
+    tasks:
+      # 理财模块
+      - task-id-prefixes: CMB_FINANCE_PLATFORM_
+        exchange-name: morph_exchange.cmb.finance.task
+        exchange-type: topic
+        # BindingKey是用于将Exchange与Queue绑定在一起的键，它告诉RabbitMQ如何将Exchange接收的消息路由到Queue。
+        # 在Fanout类型的Exchange中，BindingKey可以忽略，因为该类型的Exchange会将所有接收到的消息路由到所有绑定的Queue。
+        # 对于其他类型的Exchange，BindingKey通常与RoutingKey相同，用于指定消息应该被路由到哪个Queue。
+        # 通过使用Exchange、Queue、RoutingKey和BindingKey，RabbitMQ可以实现灵活的消息路由机制。
+        # 在实际应用中，我们可以根据业务需求选择合适的Exchange类型和路由规则，以实现高效的消息处理。
+        binding-key: routing.platform.*
+        # RoutingKey是Exchange路由消息的关键，它是一个字符串，用于指定消息应该被路由到哪个Queue。在Direct和Topic类型的Exchange中，
+        # RoutingKey是必需的，而在Fanout类型的Exchange中则不需要RoutingKey。通过合理地设置RoutingKey，可以实现灵活的消息路由规则。
+        routing-key: routing.platform.task
+        queue-name: morph_queue.cmb.finance.platform.queue
+        auto-declare-mq-bean: true
+      # 保险模块
+      - task-id-prefixes: CMB_DEPOSIT_PLATFORM_
+        exchange-name: morph_exchange.cmb.deposit.task
+        exchange-type: topic
+        binding-key: routing.platform.*
+        routing-key: routing.platform.task
+        queue-name: morph_queue.cmb.deposit.platform.queue
+        auto-declare-mq-bean: true
+      # 贵金属模块（金生利、黄金账户定期、黄金账户活期、实物金）
+      - task-id-prefixes: CMB_PRECIOUS_METAL_PLATFORM_
+        exchange-name: morph_exchange.cmb.precious.metal.platform.task
+        exchange-type: topic
+        binding-key: routing.platform.*
+        routing-key: routing.platform.task
+        queue-name: morph_queue.cmb.precious.metal.platform.queue
+        auto-declare-mq-bean: true
+      # 通用模块
+      - task-id-prefixes: CMB_COMMON_PLATFORM_
+        exchange-name: morph_exchange.cmb.common.platform.task
+        exchange-type: topic
+        binding-key: routing.platform.*
+        routing-key: routing.platform.task
+        queue-name: morph_queue.cmb.common.platform.queue
+        auto-declare-mq-bean: true
+      # 债券模块
+      - task-id-prefixes: CMB_BOND_PLATFORM_
+        exchange-name: morph_exchange.cmb.bond.platform.task
+        exchange-type: topic
+        binding-key: routing.platform.*
+        routing-key: routing.platform.task
+        queue-name: morph_queue.cmb.bond.platform.queue
+        auto-declare-mq-bean: true

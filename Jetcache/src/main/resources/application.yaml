@@ -1,0 +1,86 @@
+spring:
+  mvc:
+    servlet:
+      load-on-startup: 1
+#  main:
+#    allow-bean-definition-overriding: true
+
+# 接口Sentinel鉴权、限流
+sentinel-properties:
+  apis:
+    - api: interpretation-api
+      authority-rule:
+        limit-app: APP_FNDPFM
+        resource: /indicators/interpretation
+      flow-rules:
+        - resource: /indicators/interpretation
+          count: 500
+          limit-app: APP_FNDPFM
+    - api: position-performance-api
+      authority-rule:
+        limit-app: APP_FNDPFM
+        resource: /position/performance
+      flow-rules:
+        - resource: /position/performance
+          count: 100
+          limit-app: APP_FNDPFM
+    - api: indicators-character-api
+      authority-rule:
+        limit-app: MO_FNDDTL
+        resource: /indicators/character
+      flow-rules:
+        - resource: /indicators/character
+          count: 200
+          limit-app: MO_FNDDTL
+
+degrade-properties:
+  rules:
+    - rule: rule1
+      resource: xxx
+      slow:
+        count: 400  # 慢调用时间
+        time-window: 300  # 熔断时间
+        slow-radio: 0.5   # 慢调用比例
+        min-request-amount: 10    # 熔断触发的最小请求数
+        start-interval: 10000     # 统计时长
+      error:
+        count: 0.1
+        time-window: 300
+        min-request-amount: 10
+        start-interval: 10000
+
+jetcache:
+  statIntervalMinutes: 0  # 统计间隔，0表示不统计，开启后定期在控制台输出缓存信息
+  areaInCacheName: true   # 是否把cacheName作为远程缓存key前缀
+  local: # 本地缓存配置
+    indicator-api: # default表示全部生效，也可以指定某个cacheName
+      # 缓存类型。tair、redis为当前支持的远程缓存；linkedhashmap、caffeine为当前支持的本地缓存类型
+      type: caffeine  # 本地缓存类型，可选：caffeine、LinkedHshMap
+      # 每个缓存实例的最大元素的全局配置，仅local类型的缓存需要指定。注意是每个缓存实例的限制，而不是全部，比如这里指定100，
+      # 然后用@CreateCache创建了两个缓存实例（并且注解上没有设置localLimit属性），那么每个缓存实例的限制都是100
+      limit: 500
+      # key转换器的全局配置，2.6.5+已经支持的keyConvertor：fastjson2/jackson；2.6.5-只有一个已经实现的keyConvertor：fastjson
+      keyConvertor: fastjson
+      # 以毫秒为单位指定超时时间的全局配置(以前为defaultExpireInMillis)
+      expireAfterWriteInMillis: 100000
+  remote: # 远程缓存配置
+    indicator-api: # default表示全部生效，也可以指定某个cacheName
+      type: redis.lettuce
+      mode: Cluster
+      uri:
+        - redis://Fout%402022@11.129.10.175:6379?timeout=500ms
+        - redis://Fout%402022@11.129.10.175:6380?timeout=500ms
+        - redis://Fout%402022@11.129.10.175:6381?timeout=500ms
+        - redis://Fout%402022@11.129.10.175:6382?timeout=500ms
+        - redis://Fout%402022@11.129.10.175:6383?timeout=500ms
+        - redis://Fout%402022@11.129.10.175:6384?timeout=500ms
+      keyConvertor: fastjson
+      valueEncoder: kryo
+      valueDecoder: kryo
+      readFrom: upstreamPreferred
+      poolConfig: # redis线程池
+        max-idle: 8 #最大空闲链接
+        min-idle: 1
+        max-active: 10 #最大连接数
+        max-wait: 1000  #最大阻塞等待时间
+        test-on-borrow: true  #从连接池中获取对象时，会进行检查，检查不通过，会从连接池中移走并销毁

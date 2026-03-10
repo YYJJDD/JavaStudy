@@ -9,7 +9,6 @@ package com.jingdyang.singleton.ehan;
  * 会使用ClassLoader的loadClass方法，而这个方法使用同步代码块保证了线程安全）。所以，创建一个enum类型是线程安全的。
  * 我们定义的一个枚举，在第一次被真正用到的时候，会被虚拟机加载并初始化，而这个初始化过程是线程安全的。
  * 这是单例模式的最佳实践，它实现简单，并且在面对复杂的序列化或者反射攻击的时候，能够防止实例化多次。
- * 关于单例模式被
  */
 public enum singletonEHanSafeEnum {
     INSTANCE
